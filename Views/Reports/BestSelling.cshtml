@@ -1,0 +1,34 @@
+@{ ViewData["Title"] = "Best Selling Medicines"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">💊 Best Selling Medicines (All Time)</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+
+<div class="card"><div class="card-body p-0">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Rank</th><th>Medicine</th><th>Manufacturer</th><th>Total Qty Sold</th><th>Times Sold</th><th>Total Revenue</th></tr></thead>
+        <tbody>
+            @{ int rank = 1; }
+            @foreach (var item in ViewBag.ReportData)
+            {
+                decimal rev = (decimal?)item.TotalRevenue ?? 0m;
+                <tr>
+                    <td>
+                        @if (rank == 1) { <span class="badge bg-warning text-dark">🥇 1</span> }
+                        else if (rank == 2) { <span class="badge bg-secondary">🥈 2</span> }
+                        else if (rank == 3) { <span class="badge bg-danger">🥉 3</span> }
+                        else { <span class="text-muted">#@rank</span> }
+                    </td>
+                    <td class="fw-semibold">@item.MedicineName</td>
+                    <td>@item.ManufacturerName</td>
+                    <td><span class="badge bg-primary">@item.TotalQtySold units</span></td>
+                    <td>@item.TimesSold transactions</td>
+                    <td class="fw-semibold text-success">Rs. @rev.ToString("N2")</td>
+                </tr>
+                rank++;
+            }
+            @if (rank == 1) { <tr><td colspan="6" class="text-center text-muted py-4">No sales data found.</td></tr> }
+        </tbody>
+    </table>
+</div></div>

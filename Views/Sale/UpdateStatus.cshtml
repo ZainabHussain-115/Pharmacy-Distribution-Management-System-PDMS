@@ -1,0 +1,59 @@
+@model PDMS.Models.Sale
+@{ ViewData["Title"] = "Update Payment Status"; }
+
+<div class="page-title"><i class="bi bi-credit-card me-2"></i>Update Payment Status</div>
+
+<div class="card" style="max-width:500px;">
+    <div class="card-body">
+        <div class="alert alert-info mb-4">
+            <div class="fw-semibold">Sale #@Model.SaleID — @Model.Customer?.Name</div>
+            <div class="text-muted small">Net Amount: Rs. @((decimal?)Model.NetAmount ?? 0m).ToString("N2") | Date: @Model.SaleDate.ToString("yyyy-MM-dd")</div>
+            <div class="mt-1">
+                Current Status:
+                @if (Model.PaymentStatus == "Paid")
+                { <span class="badge badge-ok ms-1">Paid</span> }
+                else
+                { <span class="badge badge-low ms-1">Pending</span> }
+            </div>
+        </div>
+
+        <form asp-action="UpdateStatus" method="post">
+            <input type="hidden" name="id" value="@Model.SaleID" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">New Payment Status</label>
+                <div class="d-flex gap-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="PaymentStatus"
+                               value="Paid" id="statusPaid"
+                               @(Model.PaymentStatus == "Paid" ? "checked" : "") />
+                        <label class="form-check-label text-success fw-semibold" for="statusPaid">✅ Paid</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="PaymentStatus"
+                               value="Pending" id="statusPending"
+                               @(Model.PaymentStatus != "Paid" ? "checked" : "") />
+                        <label class="form-check-label text-warning fw-semibold" for="statusPending">⏳ Pending</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Payment Method</label>
+                <select name="PaymentMethod" class="form-select">
+                    <option value="Cash"         selected="@(Model.PaymentMethod=="Cash")">Cash</option>
+                    <option value="Credit"        selected="@(Model.PaymentMethod=="Credit")">Credit</option>
+                    <option value="Bank Transfer" selected="@(Model.PaymentMethod=="Bank Transfer")">Bank Transfer</option>
+                    <option value="Cheque"        selected="@(Model.PaymentMethod=="Cheque")">Cheque</option>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-1"></i>Update Status
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

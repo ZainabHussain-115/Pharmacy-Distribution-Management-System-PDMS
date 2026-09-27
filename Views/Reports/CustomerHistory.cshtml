@@ -1,0 +1,80 @@
+@{ ViewData["Title"] = "Customer History"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">👤 Customer Purchase History</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label fw-semibold">Select Customer</label>
+            <select name="customerId" class="form-select form-select-sm">
+                <option value="">-- Choose Customer --</option>
+                @foreach (var c in ViewBag.Customers)
+                {
+                    <option value="@c.CustomerID" selected="@(ViewBag.SelectedCustomer?.CustomerID == c.CustomerID)">@c.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm">View History</button></div>
+    </form>
+</div></div>
+
+@if (ViewBag.SelectedCustomer != null)
+{
+    decimal totalSpent = (decimal?)ViewBag.TotalSpent ?? 0m;
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <div class="text-muted small">Customer</div>
+                <div class="fw-bold fs-5">@ViewBag.SelectedCustomer.Name</div>
+                <div class="text-muted small">@ViewBag.SelectedCustomer.PhoneNumber</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Total Orders</div>
+                <div class="fs-3 fw-bold text-primary">@ViewBag.TotalOrders</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Total Spent</div>
+                <div class="fs-3 fw-bold text-success">Rs. @totalSpent.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+
+    @foreach (var sale in ViewBag.Sales)
+    {
+        decimal net = (decimal?)sale.NetAmount ?? 0m;
+        <div class="card mb-2">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <span class="fw-semibold">Sale #@sale.SaleID — @sale.SaleDate.ToString("yyyy-MM-dd")</span>
+                <span class="fw-bold text-success">Rs. @net.ToString("N2")</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Medicine</th><th>Batch</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                        @foreach (var sd in sale.SaleDetails)
+                        {
+                            decimal up  = (decimal?)sd.UnitPrice ?? 0m;
+                            decimal sub = (decimal?)sd.SubTotal  ?? 0m;
+                            <tr>
+                                <td>@sd.Batch?.Medicine?.Name</td>
+                                <td>@sd.Batch?.BatchNumber</td>
+                                <td>@sd.QuantitySold</td>
+                                <td>Rs. @up.ToString("N2")</td>
+                                <td>Rs. @sub.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    @if (ViewBag.Sales == null || Enumerable.Count(ViewBag.Sales) == 0)
+    { <p class="text-muted">No purchases found for this customer.</p> }
+}

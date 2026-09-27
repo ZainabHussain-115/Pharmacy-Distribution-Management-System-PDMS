@@ -1,0 +1,75 @@
+@{ ViewData["Title"] = "Overall Profit"; }
+
+@functions {
+    string F(object val) => val == null ? "0.00" : ((decimal)val).ToString("N2");
+    string F1(object val) => val == null ? "0.0" : ((decimal)val).ToString("N1");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">💰 Overall Profit Report</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center p-3 border-success">
+            <div class="text-muted small">Total Revenue</div>
+            <div class="fs-4 fw-bold text-success">Rs. @F(ViewBag.TotalRevenue)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 border-danger">
+            <div class="text-muted small">Total Cost (Purchase)</div>
+            <div class="fs-4 fw-bold text-danger">Rs. @F(ViewBag.TotalCost)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 border-primary">
+            <div class="text-muted small">Net Profit</div>
+            <div class="fs-4 fw-bold text-primary">Rs. @F(ViewBag.TotalProfit)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3 border-warning">
+            <div class="text-muted small">Profit Margin</div>
+            <div class="fs-4 fw-bold text-warning">@F1(ViewBag.ProfitMargin)%</div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-1">
+            <span class="text-muted small">Profit Margin</span>
+            <span class="fw-semibold">@F1(ViewBag.ProfitMargin)%</span>
+        </div>
+        <div class="progress" style="height:20px">
+            <div class="progress-bar bg-success" style="width:@ViewBag.ProfitMargin%">
+                @F1(ViewBag.ProfitMargin)%
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white fw-semibold">Recent Monthly Revenue (Last 12 Months)</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Year</th><th>Month</th><th>Sales Count</th><th>Revenue</th></tr></thead>
+            <tbody>
+                @foreach (var m in ViewBag.Monthly)
+                {
+                    decimal rev = (decimal?)m.Revenue ?? 0m;
+                    <tr>
+                        <td>@m.Year</td>
+                        <td>@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName((int)m.Month)</td>
+                        <td>@m.SalesCount</td>
+                        <td class="fw-semibold">Rs. @rev.ToString("N2")</td>
+                    </tr>
+                }
+                @if (ViewBag.Monthly == null || Enumerable.Count(ViewBag.Monthly) == 0)
+                { <tr><td colspan="4" class="text-center text-muted py-4">No sales data found.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+@model PDMS.Models.Sale
+@{ ViewData["Title"] = "Delete Sale"; }
+<div class="page-title text-danger"><i class="bi bi-trash me-2"></i>Delete Sale #@Model.SaleID</div>
+<div class="card" style="max-width:500px;"><div class="card-body">
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>Deleting this sale will <strong>restore the stock</strong> back to the batches.</div>
+    <dl class="row">
+        <dt class="col-4">Customer</dt>   <dd class="col-8">@Model.Customer?.Name</dd>
+        <dt class="col-4">Net Amount</dt> <dd class="col-8">Rs. @Model.NetAmount?.ToString("N2")</dd>
+        <dt class="col-4">Date</dt>       <dd class="col-8">@Model.SaleDate.ToString("yyyy-MM-dd")</dd>
+    </dl>
+    <form asp-action="Delete"><input type="hidden" asp-for="SaleID" />
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger">Yes, Delete &amp; Restore Stock</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div></div>

@@ -1,0 +1,49 @@
+@model PDMS.Models.Batch
+@{ ViewData["Title"] = "Add Batch"; }
+
+<div class="page-title"><i class="bi bi-layers me-2"></i>Add Batch</div>
+<div class="card" style="max-width:650px;"><div class="card-body">
+    <form asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="MedicineID" class="form-label fw-semibold"></label>
+                <select asp-for="MedicineID" asp-items="ViewBag.Medicines" class="form-select">
+                    <option value="">-- Select Medicine --</option>
+                </select>
+                <span asp-validation-for="MedicineID" class="text-danger small"></span>
+            </div>
+            <div class="col mb-3">
+                <label asp-for="WarehouseID" class="form-label fw-semibold"></label>
+                <select asp-for="WarehouseID" asp-items="ViewBag.Warehouses" class="form-select">
+                    <option value="">-- Select Warehouse --</option>
+                </select>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="BatchNumber" class="form-label fw-semibold"></label>
+            <input asp-for="BatchNumber" class="form-control" placeholder="e.g. B004" />
+            <span asp-validation-for="BatchNumber" class="text-danger small"></span>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <label asp-for="ManufacturingDate" class="form-label fw-semibold"></label>
+                <input asp-for="ManufacturingDate" class="form-control" type="date" />
+            </div>
+            <div class="col mb-3">
+                <label asp-for="ExpiryDate" class="form-label fw-semibold"></label>
+                <input asp-for="ExpiryDate" class="form-control" type="date" />
+                <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+            </div>
+        </div>
+        <div class="mb-4">
+            <label asp-for="QuantityReceived" class="form-label fw-semibold"></label>
+            <input asp-for="QuantityReceived" class="form-control" type="number" />
+            <div class="form-text">Quantity Available will be set automatically to match this.</div>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div></div>

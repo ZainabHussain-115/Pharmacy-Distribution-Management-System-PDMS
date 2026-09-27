@@ -1,0 +1,43 @@
+@model PDMS.Models.Manufacturer
+@{ ViewData["Title"] = "Add Manufacturer"; }
+
+<div class="page-title"><i class="bi bi-building me-2"></i>Add Manufacturer</div>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger d-none"></div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label fw-semibold"></label>
+                <input asp-for="Name" class="form-control" placeholder="e.g. Getz Pharma" />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ContactPerson" class="form-label fw-semibold"></label>
+                <input asp-for="ContactPerson" class="form-control" />
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label asp-for="Phone" class="form-label fw-semibold"></label>
+                    <input asp-for="Phone" class="form-control" placeholder="03xxxxxxxxx" />
+                </div>
+                <div class="col mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" type="email" />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Address" class="form-label fw-semibold"></label>
+                <input asp-for="Address" class="form-control" />
+            </div>
+            <div class="mb-4">
+                <label asp-for="LicenseNumber" class="form-label fw-semibold"></label>
+                <input asp-for="LicenseNumber" class="form-control" placeholder="e.g. LIC-001" />
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

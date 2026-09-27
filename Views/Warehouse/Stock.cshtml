@@ -1,0 +1,146 @@
+@{ ViewData["Title"] = "Warehouse Stock"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0"><i class="bi bi-boxes me-2"></i>Warehouse Stock View</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back to Warehouses</a>
+</div>
+
+<!-- Warehouse selector -->
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label fw-semibold">Select Warehouse</label>
+            <select name="id" class="form-select" onchange="this.form.submit()">
+                <option value="">-- Select a Warehouse --</option>
+                @foreach (var w in ViewBag.Warehouses)
+                {
+                    <option value="@w.WarehouseID"
+                            selected="@(ViewBag.SelectedWarehouse?.WarehouseID == w.WarehouseID)">
+                        @w.Name — @w.Location
+                    </option>
+                }
+            </select>
+        </div>
+    </form>
+</div></div>
+
+@if (ViewBag.SelectedWarehouse != null)
+{
+    var wh = ViewBag.SelectedWarehouse;
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Warehouse</div>
+                <div class="fw-bold fs-6">@wh.Name</div>
+                <div class="text-muted" style="font-size:11px">@wh.Location</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Medicine Types</div>
+                <div class="fs-3 fw-bold text-primary">@ViewBag.TotalMedicines</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Total Units in Stock</div>
+                <div class="fs-3 fw-bold text-success">@ViewBag.TotalUnits</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center p-3">
+                <div class="text-muted small">Warehouse Capacity</div>
+                <div class="fs-3 fw-bold text-warning">@(wh.Capacity ?? 0)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicine Summary -->
+    <div class="card mb-4">
+        <div class="card-header bg-white fw-semibold">
+            <i class="bi bi-capsule me-2"></i>Medicine Summary in @wh.Name
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>Medicine</th><th>Category</th><th>Unit</th><th>Batches</th><th>Total Qty</th><th>Earliest Expiry</th><th>Alerts</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in ViewBag.Summary)
+                    {
+                        DateTime exp = (DateTime)s.EarliestExpiry;
+                        bool expiringSoon = exp <= DateTime.Today.AddDays(90) && exp > DateTime.Today;
+                        bool expired      = exp <= DateTime.Today;
+                        <tr>
+                            <td class="fw-semibold">@s.MedicineName</td>
+                            <td>@s.Category</td>
+                            <td>@s.UnitType</td>
+                            <td><span class="badge bg-secondary">@s.TotalBatches</span></td>
+                            <td><span class="badge bg-primary">@s.TotalQty units</span></td>
+                            <td>
+                                @if (expired)
+                                { <span class="badge bg-danger">@exp.ToString("yyyy-MM-dd") EXPIRED</span> }
+                                else if (expiringSoon)
+                                { <span class="badge bg-warning text-dark">@exp.ToString("yyyy-MM-dd")</span> }
+                                else
+                                { <span class="text-muted small">@exp.ToString("yyyy-MM-dd")</span> }
+                            </td>
+                            <td>
+                                @if ((bool)s.HasExpired)   { <span class="badge bg-danger me-1">Has Expired Batch</span> }
+                                @if ((bool)s.HasLowStock)  { <span class="badge bg-warning text-dark">Low Stock</span> }
+                                @if (!(bool)s.HasExpired && !(bool)s.HasLowStock) { <span class="badge badge-ok">OK</span> }
+                            </td>
+                        </tr>
+                    }
+                    @if (ViewBag.Summary == null || Enumerable.Count(ViewBag.Summary) == 0)
+                    { <tr><td colspan="7" class="text-center text-muted py-4">No stock in this warehouse.</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Batch Detail -->
+    <div class="card">
+        <div class="card-header bg-white fw-semibold">
+            <i class="bi bi-layers me-2"></i>All Batches in @wh.Name
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>Medicine</th><th>Batch No</th><th>Mfg Date</th><th>Expiry</th><th>Received</th><th>Available</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var b in ViewBag.Batches)
+                    {
+                        bool isExpired  = b.ExpiryDate <= DateTime.Today;
+                        bool isLowStock = b.QuantityAvailable <= 20;
+                        <tr class="@(isExpired ? "table-danger" : isLowStock ? "table-warning" : "")">
+                            <td class="fw-semibold">@b.Medicine?.Name</td>
+                            <td>@b.BatchNumber</td>
+                            <td>@b.ManufacturingDate.ToString("yyyy-MM-dd")</td>
+                            <td>@b.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                            <td>@b.QuantityReceived</td>
+                            <td>@b.QuantityAvailable</td>
+                            <td>
+                                @if (isExpired)       { <span class="badge bg-danger">Expired</span> }
+                                else if (isLowStock)  { <span class="badge bg-warning text-dark">Low Stock</span> }
+                                else                  { <span class="badge badge-ok">Good</span> }
+                            </td>
+                        </tr>
+                    }
+                    @if (ViewBag.Batches == null || Enumerable.Count(ViewBag.Batches) == 0)
+                    { <tr><td colspan="7" class="text-center text-muted py-4">No batches found.</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="text-center text-muted py-5">
+        <div class="fs-1">🏭</div>
+        <p>Select a warehouse above to view its stock.</p>
+    </div>
+}

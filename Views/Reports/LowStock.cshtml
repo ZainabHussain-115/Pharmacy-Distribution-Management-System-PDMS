@@ -1,0 +1,26 @@
+@{ ViewData["Title"] = "Low Stock Report"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">⚠️ Low Stock Report</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+<div class="alert alert-warning">Medicines where <strong>Quantity Available ≤ Reorder Level</strong>. These need restocking.</div>
+<div class="card"><div class="card-body p-0">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Medicine</th><th>Batch</th><th>Warehouse</th><th>Qty Available</th><th>Reorder Level</th><th>Shortage</th></tr></thead>
+        <tbody>
+            @foreach (var b in ViewBag.ReportData)
+            {
+                <tr class="table-warning">
+                    <td class="fw-semibold">@b.Medicine?.Name</td>
+                    <td>@b.BatchNumber</td>
+                    <td>@b.Warehouse?.Name</td>
+                    <td><span class="badge bg-danger">@b.QuantityAvailable</span></td>
+                    <td>@b.Medicine?.ReorderLevel</td>
+                    <td class="text-danger fw-bold">@(b.Medicine?.ReorderLevel - b.QuantityAvailable) units needed</td>
+                </tr>
+            }
+            @if (ViewBag.ReportData == null || Enumerable.Count(ViewBag.ReportData) == 0)
+            { <tr><td colspan="6" class="text-center text-muted py-4">✅ All medicines are well stocked!</td></tr> }
+        </tbody>
+    </table>
+</div></div>

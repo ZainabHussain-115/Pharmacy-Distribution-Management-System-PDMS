@@ -1,0 +1,62 @@
+@model PDMS.Models.Medicine
+@{ ViewData["Title"] = "Add Medicine"; }
+
+<div class="page-title"><i class="bi bi-capsule me-2"></i>Add Medicine</div>
+
+<div class="card" style="max-width:650px;">
+    <div class="card-body">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label asp-for="Name" class="form-label fw-semibold"></label>
+                    <input asp-for="Name" class="form-control" placeholder="e.g. Panadol" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col mb-3">
+                    <label asp-for="GenericName" class="form-label fw-semibold"></label>
+                    <input asp-for="GenericName" class="form-control" placeholder="e.g. Paracetamol" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label asp-for="Category" class="form-label fw-semibold"></label>
+                    <input asp-for="Category" class="form-control" placeholder="e.g. Painkiller" />
+                </div>
+                <div class="col mb-3">
+                    <label asp-for="UnitType" class="form-label fw-semibold"></label>
+                    <select asp-for="UnitType" class="form-select">
+                        <option value="">-- Select --</option>
+                        <option>Tablet</option><option>Capsule</option><option>Syrup</option>
+                        <option>Injection</option><option>Cream</option><option>Drops</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label asp-for="PurchasePrice" class="form-label fw-semibold"></label>
+                    <input asp-for="PurchasePrice" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col mb-3">
+                    <label asp-for="SellingPrice" class="form-label fw-semibold"></label>
+                    <input asp-for="SellingPrice" class="form-control" type="number" step="0.01" />
+                </div>
+                <div class="col mb-3">
+                    <label asp-for="ReorderLevel" class="form-label fw-semibold"></label>
+                    <input asp-for="ReorderLevel" class="form-control" type="number" />
+                </div>
+            </div>
+            <div class="mb-4">
+                <label asp-for="ManufacturerID" class="form-label fw-semibold"></label>
+                <select asp-for="ManufacturerID" asp-items="ViewBag.Manufacturers" class="form-select">
+                    <option value="">-- Select Manufacturer --</option>
+                </select>
+                <span asp-validation-for="ManufacturerID" class="text-danger small"></span>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

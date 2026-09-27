@@ -1,0 +1,67 @@
+@{ ViewData["Title"] = "Expiry Report"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">📅 Expiry Report</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label fw-semibold">Show expiring within (days)</label>
+            <select name="days" class="form-select form-select-sm">
+                <option value="30"  selected="@(ViewBag.Days==30)">30 days</option>
+                <option value="60"  selected="@(ViewBag.Days==60)">60 days</option>
+                <option value="90"  selected="@(ViewBag.Days==90)">90 days</option>
+                <option value="180" selected="@(ViewBag.Days==180)">180 days</option>
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm">Filter</button></div>
+    </form>
+</div></div>
+
+<!-- Already expired -->
+<h6 class="text-danger fw-bold mb-2">❌ Already Expired (still in stock)</h6>
+<div class="card mb-4"><div class="card-body p-0">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Medicine</th><th>Batch</th><th>Warehouse</th><th>Qty Available</th><th>Expired On</th><th>Days Ago</th></tr></thead>
+        <tbody>
+            @foreach (var b in ViewBag.Expired)
+            {
+                <tr class="table-danger">
+                    <td class="fw-semibold">@b.Medicine?.Name</td>
+                    <td>@b.BatchNumber</td>
+                    <td>@b.Warehouse?.Name</td>
+                    <td>@b.QuantityAvailable</td>
+                    <td>@b.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                    <td class="text-danger">@((DateTime.Today - b.ExpiryDate).Days) days ago</td>
+                </tr>
+            }
+            @if (ViewBag.Expired == null || Enumerable.Count(ViewBag.Expired) == 0)
+            { <tr><td colspan="6" class="text-center text-muted py-3">✅ No expired medicines in stock.</td></tr> }
+        </tbody>
+    </table>
+</div></div>
+
+<!-- Expiring soon -->
+<h6 class="text-warning fw-bold mb-2">⚠️ Expiring Within @ViewBag.Days Days</h6>
+<div class="card"><div class="card-body p-0">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Medicine</th><th>Batch</th><th>Warehouse</th><th>Qty Available</th><th>Expiry Date</th><th>Days Left</th></tr></thead>
+        <tbody>
+            @foreach (var b in ViewBag.Expiring)
+            {
+                int daysLeft = (b.ExpiryDate - DateTime.Today).Days;
+                <tr class="@(daysLeft <= 30 ? "table-warning" : "")">
+                    <td class="fw-semibold">@b.Medicine?.Name</td>
+                    <td>@b.BatchNumber</td>
+                    <td>@b.Warehouse?.Name</td>
+                    <td>@b.QuantityAvailable</td>
+                    <td>@b.ExpiryDate.ToString("yyyy-MM-dd")</td>
+                    <td><span class="badge @(daysLeft <= 30 ? "bg-danger" : "bg-warning text-dark")">@daysLeft days</span></td>
+                </tr>
+            }
+            @if (ViewBag.Expiring == null || Enumerable.Count(ViewBag.Expiring) == 0)
+            { <tr><td colspan="6" class="text-center text-muted py-3">✅ No medicines expiring within @ViewBag.Days days.</td></tr> }
+        </tbody>
+    </table>
+</div></div>

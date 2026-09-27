@@ -1,0 +1,44 @@
+@model IEnumerable<PDMS.Models.Medicine>
+@{ ViewData["Title"] = "Medicines"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0"><i class="bi bi-capsule me-2"></i>Medicines</div>
+    <a asp-action="Create" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Add Medicine</a>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th><th>Name</th><th>Generic Name</th><th>Category</th><th>Unit</th>
+                    <th>Purchase Price</th><th>Selling Price</th><th>Reorder Lvl</th><th>Manufacturer</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model)
+                {
+                    <tr>
+                        <td>@m.MedicineID</td>
+                        <td class="fw-semibold">@m.Name</td>
+                        <td>@m.GenericName</td>
+                        <td>@m.Category</td>
+                        <td>@m.UnitType</td>
+                        <td>Rs. @m.PurchasePrice?.ToString("N2")</td>
+                        <td>Rs. @m.SellingPrice?.ToString("N2")</td>
+                        <td>@m.ReorderLevel</td>
+                        <td>@m.Manufacturer?.Name</td>
+                        <td>
+                            <a asp-action="Edit"   asp-route-id="@m.MedicineID" class="btn btn-outline-primary btn-action me-1"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Delete" asp-route-id="@m.MedicineID" class="btn btn-outline-danger  btn-action"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="10" class="text-center text-muted py-4">No medicines added yet.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

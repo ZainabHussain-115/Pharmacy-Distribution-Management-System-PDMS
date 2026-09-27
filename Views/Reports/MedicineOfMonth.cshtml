@@ -1,0 +1,77 @@
+@{ ViewData["Title"] = "Medicine of the Month"; }
+
+@functions {
+    string F(object val) => val == null ? "0.00" : ((decimal)val).ToString("N2");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="page-title mb-0">🏆 Medicine of the Month</div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← All Reports</a>
+</div>
+
+<div class="card mb-3"><div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-auto">
+            <label class="form-label fw-semibold">Month</label>
+            <select name="month" class="form-select form-select-sm">
+                @for (int m = 1; m <= 12; m++)
+                {
+                    <option value="@m" selected="@(m == (int)ViewBag.Month)">
+                        @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <label class="form-label fw-semibold">Year</label>
+            <select name="year" class="form-select form-select-sm">
+                @for (int y = DateTime.Now.Year; y >= DateTime.Now.Year - 3; y--)
+                { <option value="@y" selected="@(y == (int)ViewBag.Year)">@y</option> }
+            </select>
+        </div>
+        <div class="col-auto"><button type="submit" class="btn btn-primary btn-sm">Filter</button></div>
+    </form>
+</div></div>
+
+@if (ViewBag.TopMedicine != null)
+{
+    decimal topRev = (decimal?)ViewBag.TopMedicine.TotalRevenue ?? 0m;
+    <div class="alert alert-success d-flex align-items-center gap-3 mb-3">
+        <div class="fs-1">🏆</div>
+        <div>
+            <div class="fw-bold fs-5">@ViewBag.TopMedicine.MedicineName</div>
+            <div class="text-muted">Top medicine for @System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName((int)ViewBag.Month) @ViewBag.Year —
+                <strong>@ViewBag.TopMedicine.TotalQtySold units sold</strong> |
+                Revenue: <strong>Rs. @topRev.ToString("N2")</strong>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="card"><div class="card-header bg-white fw-semibold">All Medicines Sold This Month</div>
+<div class="card-body p-0">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Rank</th><th>Medicine</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
+        <tbody>
+            @{ int rank = 1; }
+            @foreach (var item in ViewBag.ReportData)
+            {
+                decimal rev = (decimal?)item.TotalRevenue ?? 0m;
+                <tr>
+                    <td>
+                        @if (rank == 1) { <span class="badge bg-warning text-dark">🥇 1st</span> }
+                        else if (rank == 2) { <span class="badge bg-secondary">🥈 2nd</span> }
+                        else if (rank == 3) { <span class="badge bg-danger">🥉 3rd</span> }
+                        else { <span class="text-muted">#@rank</span> }
+                    </td>
+                    <td class="fw-semibold">@item.MedicineName</td>
+                    <td>@item.TotalQtySold units</td>
+                    <td>Rs. @rev.ToString("N2")</td>
+                </tr>
+                rank++;
+            }
+            @if (rank == 1)
+            { <tr><td colspan="4" class="text-center text-muted py-4">No sales found for this period.</td></tr> }
+        </tbody>
+    </table>
+</div></div>
